@@ -1,0 +1,12 @@
+[package]
+name = "raytracer"
+version = "0.1.0"
+authors = ["jnemith <jn9159@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+image = "0.23.4"
+rand = "0.7"
+rgb = "0.8.17"
