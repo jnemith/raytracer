@@ -23,7 +23,7 @@ impl Vector3 {
         )
     }
 
-    fn random_in_unit_sphere() -> Vector3 {
+    pub fn random_in_unit_sphere() -> Vector3 {
         loop {
             let p = Vector3::random(-1., 1.);
             if p.dot(&p) >= 1. {

@@ -51,7 +51,7 @@ impl Camera {
 
 impl World {
     pub fn new() -> World {
-        let spp = 10;
+        let spp = 50;
         let max_depth = 10;
 
         let aspect_ratio = 16. / 9.;

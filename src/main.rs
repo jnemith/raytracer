@@ -36,12 +36,12 @@ fn main() {
     world.add(Sphere::new(
         Vector3::new(1., 0., -1.),
         0.5,
-        Metal::new(RGB::new(0.8, 0.6, 0.2))
+        Metal::new(RGB::new(0.8, 0.6, 0.2), 0.0)
     ));
     world.add(Sphere::new(
         Vector3::new(-1., 0., -1.),
         0.5,
-        Metal::new(RGB::new(0.8, 0.8, 0.8))
+        Metal::new(RGB::new(0.8, 0.8, 0.8), 1.)
     ));
 
     world.run(filename);
