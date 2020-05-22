@@ -4,8 +4,14 @@ use crate::objects::{
     Hittable, HitResult
 };
 
+use image::{Rgb, RgbImage};
+
 pub struct World {
     pub objects: Vec<Box<dyn Hittable>>,
+    pub cam: Camera,
+    pub width: u32,
+    pub height: u32,
+    pub output: RgbImage,
 }
 
 pub struct Camera {
@@ -16,10 +22,15 @@ pub struct Camera {
 }
 
 impl Camera {
-    pub fn new(vp_width: f64, vp_height: f64, focal_length: f64) -> Camera {
+    pub fn new(aspect_ratio: f64) -> Camera {
+        let vp_height = 2.;
+        let vp_width = aspect_ratio * vp_height;
+        let focal_length = 1.;
+
         let origin = Vector3::new(0., 0., 0.);
         let horiz = Vector3::new(vp_width, 0., 0.);
         let vert = Vector3::new(0., vp_height, 0.);
+
         Camera {
             origin,
             horiz,
@@ -29,15 +40,44 @@ impl Camera {
         }
     }
 
-    pub fn dir(&self, u: f64, v: f64) -> Vector3 {
+    pub fn ray(&self, u: f64, v: f64) -> Vector3 {
         (self.horiz * u) + (self.vert * v) + self.ll_corner
     }
 }
 
 impl World {
     pub fn new() -> World {
-        World { objects: Vec::new() }
+        let aspect_ratio = 16. / 9.;
+        let width = 768;
+        let height = (width as f64 / aspect_ratio) as u32;
+
+        World {
+            objects: Vec::new(),
+            cam: Camera::new(aspect_ratio),
+            width,
+            height,
+            output: RgbImage::new(width, height),
+        }
     }
+
+    pub fn run(&mut self, filename: &str) {
+        for (index, row) in (0..self.height).rev().enumerate() {
+            for col in 0..self.width {
+                let u = col as f64 / (self.width as f64);
+                let v = row as f64 / (self.height as f64);
+                let r = Ray::new(self.cam.origin, self.cam.ray(u, v));
+    
+                let color = r.get_color(&self);
+                self.output.put_pixel(col, index as u32, Rgb([
+                    (color.r * 255.) as u8,
+                    (color.g * 255.) as u8,
+                    (color.b * 255.) as u8,
+                ]));
+            }
+        }
+        self.output.save(filename).unwrap();
+    }
+
     pub fn hit(&self, ray: &Ray) -> Option<HitResult> {
         self.objects.iter()
             .filter_map(|obj| obj.intersect(ray))
