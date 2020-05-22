@@ -1,15 +1,20 @@
-use crate::vec3::Vector3;
+use crate::materials::Material;
+use crate::objects::{HitResult, Hittable};
 use crate::ray::Ray;
-use crate::objects::{Hittable, HitResult};
+use crate::vec3::Vector3;
+
+use std::rc::Rc;
 
 pub struct Sphere {
     pub center: Vector3,
-    pub r: f64
+    pub r: f64,
+    pub mat: Rc<dyn Material>,
 }
 
 impl Sphere {
-    pub fn new(center: Vector3, r: f64) -> Sphere {
-        Sphere { center, r }
+    pub fn new(center: Vector3, r: f64, mat: impl Material + 'static) -> Sphere {
+        let mat = Rc::new(mat);
+        Sphere { center, r, mat }
     }
 }
 
@@ -36,15 +41,20 @@ impl Hittable for Sphere {
             } else {
                 tmp_s.min(tmp_a)
             };
-            
+
             let hp = ray.at(distance);
-            let normal = (hp - self.center).unit_vec();
+            let mut normal = (hp - self.center).unit_vec();
+            let face = ray.dir.dot(&normal) < 0.;
+            if !face {
+                normal = -normal;
+            }
 
             Some(HitResult::new(
                 distance,
                 hp,
                 normal,
-                ray.dir.dot(&normal) < 0.
+                ray.dir.dot(&normal) < 0.,
+                Rc::clone(&self.mat),
             ))
         } else {
             None

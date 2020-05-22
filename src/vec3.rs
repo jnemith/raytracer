@@ -1,4 +1,5 @@
-use std::ops::{Add, Sub, Mul, Div, Neg};
+use rand::Rng;
+use std::ops::{Add, Div, Mul, Neg, Sub};
 
 #[derive(Copy, Clone, PartialEq, PartialOrd, Debug)]
 pub struct Vector3 {
@@ -7,9 +8,46 @@ pub struct Vector3 {
     pub z: f64,
 }
 
+#[allow(dead_code)]
 impl Vector3 {
     pub fn new(x: f64, y: f64, z: f64) -> Vector3 {
         Vector3 { x, y, z }
+    }
+
+    pub fn random(min: f64, max: f64) -> Vector3 {
+        let mut rng = rand::thread_rng();
+        Vector3::new(
+            rng.gen_range(min, max),
+            rng.gen_range(min, max),
+            rng.gen_range(min, max),
+        )
+    }
+
+    fn random_in_unit_sphere() -> Vector3 {
+        loop {
+            let p = Vector3::random(-1., 1.);
+            if p.dot(&p) >= 1. {
+                continue;
+            }
+            return p;
+        }
+    }
+
+    pub fn random_in_hemisphere(normal: &Vector3) -> Vector3 {
+        let in_unit_sphere = Vector3::random_in_unit_sphere();
+        if in_unit_sphere.dot(normal) > 0.0 {
+            in_unit_sphere
+        } else {
+            -in_unit_sphere
+        }
+    }
+
+    pub fn random_unit_vec() -> Vector3 {
+        let mut rng = rand::thread_rng();
+        let a = rng.gen_range(0., 2. * std::f64::consts::PI);
+        let z: f64 = rng.gen_range(-1., 1.);
+        let r = (1. - (z * z)).sqrt();
+        Vector3::new(r * a.cos(), r * a.sin(), z)
     }
 
     pub fn length(&self) -> f64 {
