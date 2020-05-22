@@ -1,7 +1,6 @@
 use crate::materials::{Material, MaterialResult};
 use crate::objects::HitResult;
 use crate::ray::Ray;
-use crate::vec3::Vector3;
 
 use rgb::RGB;
 
@@ -16,7 +15,10 @@ impl Metal {
 }
 
 impl Material for Metal {
-    fn scatter(&self, _ray_in: &Ray, hr: &HitResult) -> MaterialResult {
-        //
+    fn scatter(&self, ray_in: &Ray, hr: &HitResult) -> Option<MaterialResult> {
+        let attenuation = RGB::new(self.color.r, self.color.g, self.color.b);
+        let reflected = ray_in.dir.unit_vec().reflect(&hr.normal);
+        let scattered = Ray::new(hr.hit_point, reflected);
+        Some(MaterialResult::new(attenuation, scattered))
     }
 }

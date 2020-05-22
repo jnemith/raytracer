@@ -65,6 +65,11 @@ impl Vector3 {
     pub fn dot(&self, other: &Vector3) -> f64 {
         (self.x * other.x) + (self.y * other.y) + (self.z * other.z)
     }
+
+    pub fn reflect(&self, n: &Vector3) -> Vector3 {
+        let r = Vector3::new(self.x, self.y, self.z);
+        r - (*n * r.dot(n) * 2.)
+    }
 }
 
 impl Add for Vector3 {
