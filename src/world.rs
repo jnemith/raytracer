@@ -51,7 +51,7 @@ impl Camera {
 
 impl World {
     pub fn new() -> World {
-        let spp = 50;
+        let spp = 15;
         let max_depth = 10;
 
         let aspect_ratio = 16. / 9.;
@@ -81,7 +81,7 @@ impl World {
                     let r = self.cam.ray(u, v);
                     color += r.get_color(&self, 0);
                 }
-                self.write_color(color, col, index as u32, self.spp as f64);
+                self.write_color(color, col, index as u32);
             }
         }
         self.output.save(filename).unwrap();
@@ -105,8 +105,8 @@ impl World {
         self.objects.push(Box::new(obj));
     }
 
-    fn write_color(&mut self, color: RGB<f64>, col: u32, row: u32, spp: f64) {
-        let scale = 1. / spp;
+    fn write_color(&mut self, color: RGB<f64>, col: u32, row: u32) {
+        let scale = 1. / (self.spp as f64);
         let scaled = RGB::new(
             (color.r * scale).sqrt(),
             (color.g * scale).sqrt(),
