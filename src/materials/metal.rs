@@ -22,6 +22,10 @@ impl Material for Metal {
         let attenuation = RGB::new(self.color.r, self.color.g, self.color.b);
         let reflected = ray_in.dir.unit_vec().reflect(&hr.normal);
         let scattered = Ray::new(hr.hit_point, reflected + Vector3::random_in_unit_sphere() * self.fuzz);
-        Some(MaterialResult::new(attenuation, scattered))
+        if scattered.dir.dot(&hr.normal) > 0. {
+            Some(MaterialResult::new(attenuation, scattered))
+        } else {
+            None
+        }
     }
 }
