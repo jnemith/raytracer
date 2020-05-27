@@ -66,9 +66,16 @@ impl Vector3 {
         (self.x * other.x) + (self.y * other.y) + (self.z * other.z)
     }
 
-    pub fn reflect(&self, n: &Vector3) -> Vector3 {
+    pub fn reflect(&self, normal: &Vector3) -> Vector3 {
         let r = Vector3::new(self.x, self.y, self.z);
-        r - (*n * r.dot(n) * 2.)
+        r - (*normal * r.dot(normal) * 2.)
+    }
+
+    pub fn refract(&self, normal: Vector3, eta_over_etap: f64) -> Vector3 {
+        let cos_theta = (-*self).dot(&normal);
+        let r_out_parallel: Vector3 = (*self + (normal * cos_theta)) * eta_over_etap;
+        let r_out_perp: Vector3 = normal * (-(1.0 - r_out_parallel.dot(&r_out_parallel)).sqrt());
+        r_out_parallel + r_out_perp
     }
 }
 
