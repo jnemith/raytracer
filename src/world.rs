@@ -51,7 +51,7 @@ impl Camera {
 
 impl World {
     pub fn new() -> World {
-        let spp = 10;
+        let spp = 15;
         let max_depth = 10;
 
         let aspect_ratio = 16. / 9.;
@@ -70,9 +70,9 @@ impl World {
     }
 
     pub fn run(&mut self, filename: &str) {
+        let mut rng = rand::thread_rng();
         for (index, row) in (0..self.height).rev().enumerate() {
             for col in 0..self.width {
-                let mut rng = rand::thread_rng();
                 let mut color = RGB::new(0., 0., 0.);
 
                 for _ in 0..self.spp {
@@ -94,16 +94,11 @@ impl World {
 
         if let Some(hr) = self.hit(&ray) {
             if let Some(mr) = hr.mat.scatter(&ray, &hr) {
-                let att = RGB::new(
-                    mr.attenuation.r,
-                    mr.attenuation.g,
-                    mr.attenuation.b,
-                );
                 let tmp = self.get_color(&mr.scattered, depth + 1);
                 RGB::new(
-                    tmp.r * att.r,
-                    tmp.g * att.g,
-                    tmp.b * att.b,
+                    tmp.r * mr.attenuation.r,
+                    tmp.g * mr.attenuation.g,
+                    tmp.b * mr.attenuation.b,
                 )
             } else {
                 RGB::new(0., 0., 0.)
@@ -116,17 +111,19 @@ impl World {
     }
 
     pub fn hit(&self, ray: &Ray) -> Option<HitResult> {
-        let min = self
-            .objects
+        self.objects
             .iter()
-            .filter_map(|obj| obj.intersect(ray))
-            .min_by(|hr1, hr2| hr1.dist.partial_cmp(&hr2.dist).unwrap());
-        if let Some(hr) = &min {
-            if hr.dist > 0.001 {
-                return min;
-            }
-        }
-        None
+            .filter_map(|obj| {
+                if let Some(hit) = obj.intersect(ray) {
+                    if hit.dist > 0.001 {
+                        return Some(hit);
+                    }
+                }
+                None
+            })
+            .min_by(|hr1, hr2| {
+                hr1.dist.partial_cmp(&hr2.dist).unwrap()
+            })
     }
 
     pub fn add(&mut self, obj: impl Hittable + 'static) {
