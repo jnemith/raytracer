@@ -19,7 +19,7 @@ impl Sphere {
 }
 
 impl Hittable for Sphere {
-    fn intersect(&self, ray: &Ray) -> Option<HitResult> {
+    fn intersect(&self, ray: &Ray, min: f64) -> Option<HitResult> {
         let oc = ray.origin - self.center;
         let a = ray.dir.dot(&ray.dir);
         let b = oc.dot(&ray.dir);
@@ -30,20 +30,20 @@ impl Hittable for Sphere {
             let root = discriminant.sqrt();
             let tmp_s = (-b - root) / a;
             let tmp_a = (-b + root) / a;
-            if tmp_s < 0. && tmp_a < 0. {
+            if tmp_s < min && tmp_a < min {
                 return None;
             }
 
-            let distance = if tmp_s < 0. {
+            let distance = if tmp_s < min {
                 tmp_a
-            } else if tmp_a < 0. {
+            } else if tmp_a < min {
                 tmp_s
             } else {
                 tmp_s.min(tmp_a)
             };
 
             let hp = ray.at(distance);
-            let mut normal = (hp - self.center).unit_vec();
+            let mut normal = (hp - self.center) / self.r;
             let face = ray.dir.dot(&normal) < 0.;
             if !face {
                 normal = -normal;

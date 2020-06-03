@@ -111,15 +111,11 @@ impl World {
     }
 
     pub fn hit(&self, ray: &Ray) -> Option<HitResult> {
+        let min_dist = 0.001;
         self.objects
             .iter()
             .filter_map(|obj| {
-                if let Some(hit) = obj.intersect(ray) {
-                    if hit.dist > 0.001 {
-                        return Some(hit);
-                    }
-                }
-                None
+                obj.intersect(ray, min_dist)
             })
             .min_by(|hr1, hr2| {
                 hr1.dist.partial_cmp(&hr2.dist).unwrap()

@@ -7,7 +7,7 @@ use crate::vec3::Vector3;
 use std::rc::Rc;
 
 pub trait Hittable {
-    fn intersect(&self, ray: &Ray) -> Option<HitResult>;
+    fn intersect(&self, ray: &Ray, min: f64) -> Option<HitResult>;
 }
 
 pub struct HitResult {
