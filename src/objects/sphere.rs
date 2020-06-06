@@ -43,17 +43,14 @@ impl Hittable for Sphere {
             };
 
             let hp = ray.at(distance);
-            let mut normal = (hp - self.center) / self.r;
-            let face = ray.dir.dot(&normal) < 0.;
-            if !face {
-                normal = -normal;
-            }
+            let normal = (hp - self.center) / self.r;
+            let face = ray.dir.dot(&normal) < 0.0;
 
             Some(HitResult::new(
                 distance,
                 hp,
-                normal,
-                ray.dir.dot(&normal) < 0.,
+                if face { normal } else { -normal },
+                face,
                 Rc::clone(&self.mat),
             ))
         } else {
