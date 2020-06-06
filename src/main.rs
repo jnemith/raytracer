@@ -4,10 +4,7 @@ mod ray;
 mod vec3;
 mod world;
 
-use crate::materials::{
-    lambertian::Lambertian,
-    metal::Metal,
-};
+use crate::materials::{dielectric::Dielectric, lambertian::Lambertian, metal::Metal};
 use crate::objects::sphere::Sphere;
 use crate::vec3::Vector3;
 use crate::world::World;
@@ -23,9 +20,9 @@ fn main() {
     );
 
     world.add(Sphere::new(
-        Vector3::new(0., 0., -1.),
+        Vector3::new(0.0, 0.0, -1.),
         0.5,
-        Lambertian::new(RGB::new(0.7, 0.3, 0.3)),
+        Dielectric::new(1.5),
     ));
     world.add(Sphere::new(
         Vector3::new(0., -100.5, -1.),
@@ -34,14 +31,14 @@ fn main() {
     ));
 
     world.add(Sphere::new(
-        Vector3::new(1., 0., -1.),
+        Vector3::new(-1.0, 0., -1.),
         0.5,
-        Metal::new(RGB::new(0.8, 0.6, 0.2), 0.0)
+        Lambertian::new(RGB::new(0.1, 0.2, 0.7)),
     ));
     world.add(Sphere::new(
-        Vector3::new(-1., 0., -1.),
+        Vector3::new(1.0, 0., -1.),
         0.5,
-        Metal::new(RGB::new(0.8, 0.8, 0.8), 1.)
+        Lambertian::new(RGB::new(1.0, 0.6, 0.1))
     ));
 
     world.run(filename);
