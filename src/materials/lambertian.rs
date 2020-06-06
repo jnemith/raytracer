@@ -18,7 +18,10 @@ impl Lambertian {
 impl Material for Lambertian {
     fn scatter(&self, _ray_in: &Ray, hr: &HitResult) -> Option<MaterialResult> {
         let attenuation = RGB::new(self.color.r, self.color.g, self.color.b);
-        let target = hr.hit_point + hr.normal + Vector3::random_unit_vec();
-        Some(MaterialResult::new(attenuation, Ray::new(hr.hit_point, target - hr.hit_point)))
+        let target = hr.normal + Vector3::random_unit_vec();
+        Some(MaterialResult::new(
+            attenuation,
+            Ray::new(hr.hit_point, target),
+        ))
     }
 }
