@@ -1,3 +1,4 @@
+mod camera;
 mod materials;
 mod objects;
 mod ray;
@@ -22,7 +23,7 @@ fn main() {
     world.add(Sphere::new(
         Vector3::new(0.0, 0.0, -1.),
         0.5,
-        Dielectric::new(1.5),
+        Lambertian::new(RGB::new(0.1, 0.1, 0.9)),
     ));
     world.add(Sphere::new(
         Vector3::new(0., -100.5, -1.),
@@ -33,12 +34,12 @@ fn main() {
     world.add(Sphere::new(
         Vector3::new(-1.0, 0., -1.),
         0.5,
-        Lambertian::new(RGB::new(0.1, 0.2, 0.7)),
+        Dielectric::new(1.5),
     ));
     world.add(Sphere::new(
         Vector3::new(1.0, 0., -1.),
         0.5,
-        Lambertian::new(RGB::new(1.0, 0.6, 0.1))
+        Lambertian::new(RGB::new(0.8, 0.6, 0.2))
     ));
 
     world.run(filename);

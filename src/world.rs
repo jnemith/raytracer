@@ -1,3 +1,4 @@
+use crate::camera::Camera;
 use crate::objects::{HitResult, Hittable};
 use crate::ray::Ray;
 use crate::vec3::Vector3;
@@ -16,39 +17,6 @@ pub struct World {
     pub max_depth: u32,
 }
 
-pub struct Camera {
-    pub origin: Vector3,
-    pub horiz: Vector3,
-    pub vert: Vector3,
-    pub ll_corner: Vector3,
-}
-
-impl Camera {
-    pub fn new(aspect_ratio: f64) -> Camera {
-        let vp_height = 2.;
-        let vp_width = aspect_ratio * vp_height;
-        let focal_length = 1.;
-
-        let origin = Vector3::new(0., 0., 0.);
-        let horiz = Vector3::new(vp_width, 0., 0.);
-        let vert = Vector3::new(0., vp_height, 0.);
-
-        Camera {
-            origin,
-            horiz,
-            vert,
-            ll_corner: origin - (horiz / 2.) - (vert / 2.) - Vector3::new(0., 0., focal_length),
-        }
-    }
-
-    pub fn ray(&self, u: f64, v: f64) -> Ray {
-        Ray::new(
-            self.origin,
-            (self.horiz * u) + (self.vert * v) + self.ll_corner,
-        )
-    }
-}
-
 impl World {
     pub fn new() -> World {
         let spp = 15;
@@ -57,10 +25,17 @@ impl World {
         let aspect_ratio = 16. / 9.;
         let width = 500;
         let height = (width as f64 / aspect_ratio) as u32;
+        let cam = Camera::new(
+            Vector3::new(-2.0, 2.0, 1.0),
+            Vector3::new(0.0, 0.0, -1.0),
+            Vector3::new(0.0, 1.0, 0.0),
+            20.0,
+            aspect_ratio,
+        );
 
         World {
             objects: Vec::new(),
-            cam: Camera::new(aspect_ratio),
+            cam,
             width,
             height,
             output: RgbImage::new(width, height),
@@ -114,12 +89,8 @@ impl World {
         let min_dist = 0.001;
         self.objects
             .iter()
-            .filter_map(|obj| {
-                obj.intersect(ray, min_dist)
-            })
-            .min_by(|hr1, hr2| {
-                hr1.dist.partial_cmp(&hr2.dist).unwrap()
-            })
+            .filter_map(|obj| obj.intersect(ray, min_dist))
+            .min_by(|hr1, hr2| hr1.dist.partial_cmp(&hr2.dist).unwrap())
     }
 
     pub fn add(&mut self, obj: impl Hittable + 'static) {
