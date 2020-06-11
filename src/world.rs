@@ -25,12 +25,17 @@ impl World {
         let aspect_ratio = 16. / 9.;
         let width = 500;
         let height = (width as f64 / aspect_ratio) as u32;
+        let from = Vector3::new(3.0, 3.0, 2.0);
+        let to = Vector3::new(0.0, 0.0, -1.0);
+
         let cam = Camera::new(
-            Vector3::new(-2.0, 2.0, 1.0),
-            Vector3::new(0.0, 0.0, -1.0),
+            from,
+            to,
             Vector3::new(0.0, 1.0, 0.0),
             20.0,
             aspect_ratio,
+            2.0,
+            (from - to).length(),
         );
 
         World {
