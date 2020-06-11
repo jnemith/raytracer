@@ -3,17 +3,17 @@ use crate::objects::{HitResult, Hittable};
 use crate::ray::Ray;
 use crate::vec3::Vector3;
 
-use std::rc::Rc;
+use std::sync::Arc;
 
 pub struct Sphere {
     pub center: Vector3,
     pub r: f64,
-    pub mat: Rc<dyn Material>,
+    pub mat: Arc<dyn Material>,
 }
 
 impl Sphere {
     pub fn new(center: Vector3, r: f64, mat: impl Material + 'static) -> Sphere {
-        let mat = Rc::new(mat);
+        let mat = Arc::new(mat);
         Sphere { center, r, mat }
     }
 }
@@ -51,7 +51,7 @@ impl Hittable for Sphere {
                 hp,
                 if face { normal } else { -normal },
                 face,
-                Rc::clone(&self.mat),
+                Arc::clone(&self.mat),
             ))
         } else {
             None

@@ -4,9 +4,9 @@ use crate::materials::Material;
 use crate::ray::Ray;
 use crate::vec3::Vector3;
 
-use std::rc::Rc;
+use std::sync::Arc;
 
-pub trait Hittable {
+pub trait Hittable: Sync + Send {
     fn intersect(&self, ray: &Ray, min: f64) -> Option<HitResult>;
 }
 
@@ -17,7 +17,7 @@ pub struct HitResult {
 
     // True: ray is outside. False: ray is inside
     pub face: bool,
-    pub mat: Rc<dyn Material>,
+    pub mat: Arc<dyn Material>,
 }
 
 impl HitResult {
@@ -26,7 +26,7 @@ impl HitResult {
         hit_point: Vector3,
         normal: Vector3,
         face: bool,
-        mat: Rc<dyn Material>,
+        mat: Arc<dyn Material>,
     ) -> HitResult {
         HitResult {
             dist,

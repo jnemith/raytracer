@@ -10,6 +10,7 @@ use crate::objects::sphere::Sphere;
 use crate::vec3::Vector3;
 use crate::world::World;
 
+use rand::Rng;
 use rgb::RGB;
 
 fn main() {
@@ -21,25 +22,27 @@ fn main() {
     );
 
     world.add(Sphere::new(
-        Vector3::new(0.0, 0.0, -1.),
-        0.5,
-        Lambertian::new(RGB::new(0.1, 0.1, 0.9)),
-    ));
-    world.add(Sphere::new(
-        Vector3::new(0., -100.5, -1.),
-        100.,
-        Lambertian::new(RGB::new(0.8, 0.8, 0.)),
+        Vector3::new(0., -1000.0, 0.0),
+        1000.0,
+        Lambertian::new(RGB::new(0.5, 0.5, 0.5)),
     ));
 
     world.add(Sphere::new(
-        Vector3::new(-1.0, 0., -1.),
-        0.5,
+        Vector3::new(0.0, 1.0, 0.0),
+        1.0,
         Dielectric::new(1.5),
     ));
+
     world.add(Sphere::new(
-        Vector3::new(1.0, 0., -1.),
-        0.5,
-        Lambertian::new(RGB::new(0.8, 0.6, 0.2))
+        Vector3::new(-4.0, 1.0, 0.0),
+        1.0,
+        Lambertian::new(RGB::new(0.1, 0.1, 0.9)),
+    ));
+
+    world.add(Sphere::new(
+        Vector3::new(4.0, 1.0, 0.0),
+        1.0,
+        Metal::new(RGB::new(0.7, 0.6, 0.5), 0.0),
     ));
 
     world.run(filename);

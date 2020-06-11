@@ -6,6 +6,7 @@ use crate::vec3::Vector3;
 use image::{Rgb, RgbImage};
 use rand::Rng;
 use rgb::RGB;
+use rayon::prelude::*;
 
 pub struct World {
     pub objects: Vec<Box<dyn Hittable>>,
@@ -19,14 +20,14 @@ pub struct World {
 
 impl World {
     pub fn new() -> World {
-        let spp = 15;
+        let spp = 50;
         let max_depth = 10;
 
         let aspect_ratio = 16. / 9.;
         let width = 500;
         let height = (width as f64 / aspect_ratio) as u32;
-        let from = Vector3::new(3.0, 3.0, 2.0);
-        let to = Vector3::new(0.0, 0.0, -1.0);
+        let from = Vector3::new(13.0, 2.0, 3.0);
+        let to = Vector3::new(0.0, 0.0, 0.0);
 
         let cam = Camera::new(
             from,
@@ -34,8 +35,8 @@ impl World {
             Vector3::new(0.0, 1.0, 0.0),
             20.0,
             aspect_ratio,
-            2.0,
-            (from - to).length(),
+            0.1,
+            10.0,
         );
 
         World {
@@ -50,20 +51,45 @@ impl World {
     }
 
     pub fn run(&mut self, filename: &str) {
-        let mut rng = rand::thread_rng();
-        for (index, row) in (0..self.height).rev().enumerate() {
-            for col in 0..self.width {
-                let mut color = RGB::new(0., 0., 0.);
+        let colors: Vec<Vec<RGB<f64>>> = (0..self.height).into_par_iter()
+            .rev()
+            .map(|row| {
+                (0..self.width)
+                    .into_par_iter()
+                    .map(|col| {
+                        let mut rng = rand::thread_rng();
+                        let mut color = RGB::new(0., 0., 0.);
 
-                for _ in 0..self.spp {
-                    let u = (col as f64 + rng.gen_range(0., 1.)) / (self.width as f64);
-                    let v = (row as f64 + rng.gen_range(0., 1.)) / (self.height as f64);
-                    let r = self.cam.ray(u, v);
-                    color = color + self.get_color(&r, 0);
-                }
-                self.write_color(color, col, index as u32);
+                        for _ in 0..self.spp {
+                            let u = (col as f64 + rng.gen_range(0., 1.)) / (self.width as f64);
+                            let v = (row as f64 + rng.gen_range(0., 1.)) / (self.height as f64);
+                            let r = self.cam.ray(u, v);
+                            color = color + self.get_color(&r, 0);
+                        }
+                        color
+                    })
+                    .collect()
+            })
+            .collect();
+
+        for (row, vecrow) in colors.iter().enumerate() {
+            for (col, color) in vecrow.iter().enumerate() {
+                self.write_color(*color, col as u32, row as u32);
             }
         }
+        // for (index, row) in (0..self.height).rev().enumerate() {
+        //     for col in 0..self.width {
+        //         let mut color = RGB::new(0., 0., 0.);
+
+        //         for _ in 0..self.spp {
+        //             let u = (col as f64 + rng.gen_range(0., 1.)) / (self.width as f64);
+        //             let v = (row as f64 + rng.gen_range(0., 1.)) / (self.height as f64);
+        //             let r = self.cam.ray(u, v);
+        //             color = color + self.get_color(&r, 0);
+        //         }
+        //         self.write_color(color, col, index as u32);
+        //     }
+        // }
         self.output.save(filename).unwrap();
     }
 
