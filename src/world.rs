@@ -20,7 +20,7 @@ pub struct World {
 
 impl World {
     pub fn new() -> World {
-        let spp = 50;
+        let spp = 100;
         let max_depth = 10;
 
         let aspect_ratio = 16. / 9.;
@@ -77,19 +77,6 @@ impl World {
                 self.write_color(*color, col as u32, row as u32);
             }
         }
-        // for (index, row) in (0..self.height).rev().enumerate() {
-        //     for col in 0..self.width {
-        //         let mut color = RGB::new(0., 0., 0.);
-
-        //         for _ in 0..self.spp {
-        //             let u = (col as f64 + rng.gen_range(0., 1.)) / (self.width as f64);
-        //             let v = (row as f64 + rng.gen_range(0., 1.)) / (self.height as f64);
-        //             let r = self.cam.ray(u, v);
-        //             color = color + self.get_color(&r, 0);
-        //         }
-        //         self.write_color(color, col, index as u32);
-        //     }
-        // }
         self.output.save(filename).unwrap();
     }
 
