@@ -1,5 +1,5 @@
 use rand::Rng;
-use std::ops::{Add, Div, Mul, Neg, Sub};
+use std::ops::{Add, Div, Mul, Neg, Sub, Index};
 
 #[derive(Copy, Clone, PartialEq, PartialOrd, Debug)]
 pub struct Vector3 {
@@ -140,6 +140,19 @@ impl Div<f64> for Vector3 {
             x: self.x / other,
             y: self.y / other,
             z: self.z / other,
+        }
+    }
+}
+
+impl Index<usize> for Vector3 {
+    type Output = f64;
+
+    fn index(&self, i: usize) -> &Self::Output {
+        match i {
+            0 => &self.x,
+            1 => &self.y,
+            2 => &self.z,
+            _ => panic!("Vector3: Index out of range."),
         }
     }
 }
