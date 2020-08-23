@@ -20,6 +20,10 @@ pub struct HitResult {
     pub mat: Arc<dyn Material>,
 }
 
+pub struct HitList {
+    pub objects: Vec<Box<dyn Hittable>>,
+}
+
 impl HitResult {
     pub fn new(
         dist: f64,
@@ -35,5 +39,26 @@ impl HitResult {
             face,
             mat,
         }
+    }
+}
+
+impl HitList {
+    pub fn new() -> Self {
+        HitList {
+            objects: Vec::new(),
+        }
+    }
+    pub fn add(&mut self, obj: impl Hittable + 'static) {
+        self.objects.push(Box::new(obj));
+    }
+}
+
+impl Hittable for HitList {
+    fn intersect(&self, ray: &Ray, min: f64) -> Option<HitResult> {
+        let min_dist = 0.001;
+        self.objects
+            .iter()
+            .filter_map(|obj| obj.intersect(ray, min_dist))
+            .min_by(|hr1, hr2| hr1.dist.partial_cmp(&hr2.dist).unwrap())
     }
 }

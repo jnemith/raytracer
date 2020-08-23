@@ -1,15 +1,15 @@
 use crate::camera::Camera;
-use crate::objects::{HitResult, Hittable};
+use crate::objects::{HitList, HitResult, Hittable};
 use crate::ray::Ray;
 use crate::vec3::Vector3;
 
 use image::{Rgb, RgbImage};
 use rand::Rng;
-use rgb::RGB;
 use rayon::prelude::*;
+use rgb::RGB;
 
 pub struct World {
-    pub objects: Vec<Box<dyn Hittable>>,
+    pub objects: HitList,
     pub cam: Camera,
     pub width: u32,
     pub height: u32,
@@ -20,27 +20,27 @@ pub struct World {
 
 impl World {
     pub fn new() -> World {
-        let spp = 100;
+        let spp = 15;
         let max_depth = 10;
 
         let aspect_ratio = 16. / 9.;
-        let width = 500;
+        let width = 426;
         let height = (width as f64 / aspect_ratio) as u32;
-        let from = Vector3::new(13.0, 2.0, 3.0);
-        let to = Vector3::new(0.0, 0.0, 0.0);
+        let from = Vector3::new(5.0, 4.0, 3.0);
+        let to = Vector3::new(0.0, 2.0, 0.0);
 
         let cam = Camera::new(
             from,
             to,
             Vector3::new(0.0, 1.0, 0.0),
-            20.0,
+            70.0,
             aspect_ratio,
             0.1,
             10.0,
         );
 
         World {
-            objects: Vec::new(),
+            objects: HitList::new(),
             cam,
             width,
             height,
@@ -51,7 +51,8 @@ impl World {
     }
 
     pub fn run(&mut self, filename: &str) {
-        let colors: Vec<Vec<RGB<f64>>> = (0..self.height).into_par_iter()
+        let colors: Vec<Vec<RGB<f64>>> = (0..self.height)
+            .into_par_iter()
             .rev()
             .map(|row| {
                 (0..self.width)
@@ -85,7 +86,7 @@ impl World {
             return RGB::new(0., 0., 0.);
         }
 
-        if let Some(hr) = self.hit(&ray) {
+        if let Some(hr) = self.objects.intersect(&ray, 0.001) {
             if let Some(mr) = hr.mat.scatter(&ray, &hr) {
                 let tmp = self.get_color(&mr.scattered, depth + 1);
                 RGB::new(
@@ -101,18 +102,6 @@ impl World {
             let t = 0.5 * (unit.y + 1.);
             RGB::new(1., 1., 1.) * (1. - t) + RGB::new(0.5, 0.75, 1.) * t
         }
-    }
-
-    pub fn hit(&self, ray: &Ray) -> Option<HitResult> {
-        let min_dist = 0.001;
-        self.objects
-            .iter()
-            .filter_map(|obj| obj.intersect(ray, min_dist))
-            .min_by(|hr1, hr2| hr1.dist.partial_cmp(&hr2.dist).unwrap())
-    }
-
-    pub fn add(&mut self, obj: impl Hittable + 'static) {
-        self.objects.push(Box::new(obj));
     }
 
     fn write_color(&mut self, color: RGB<f64>, col: u32, row: u32) {
@@ -132,6 +121,10 @@ impl World {
                 (clamp(scaled.b, 0., 0.999) * 256.) as u8,
             ]),
         );
+    }
+
+    pub fn add(&mut self, obj: impl Hittable + 'static) {
+        self.objects.add(obj);
     }
 }
 
