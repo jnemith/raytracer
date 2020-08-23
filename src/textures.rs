@@ -1,3 +1,4 @@
+pub mod checkers;
 pub mod color;
 
 use crate::vec3::Vector3;
