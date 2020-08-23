@@ -16,6 +16,19 @@ impl Sphere {
         let mat = Arc::new(mat);
         Sphere { center, r, mat }
     }
+
+    pub fn get_uv(point: Vector3) -> (f64, f64) {
+        use std::f64::consts::{FRAC_PI_2, PI};
+
+        let phi = point.z.atan2(point.x);
+        let theta = point.y.asin();
+        (
+            // u
+            1.0 - ((phi + PI) / (2.0 * PI)),
+            // v
+            (theta + FRAC_PI_2) / PI,
+        )
+    }
 }
 
 impl Hittable for Sphere {
@@ -46,9 +59,13 @@ impl Hittable for Sphere {
             let normal = (hp - self.center) / self.r;
             let face = ray.dir.dot(&normal) < 0.0;
 
+            let (u, v) = Sphere::get_uv(normal);
+
             Some(HitResult::new(
                 distance,
                 hp,
+                u,
+                v,
                 if face { normal } else { -normal },
                 face,
                 Arc::clone(&self.mat),

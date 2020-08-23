@@ -13,6 +13,8 @@ pub trait Hittable: Sync + Send {
 pub struct HitResult {
     pub dist: f64,
     pub hit_point: Vector3,
+    pub u: f64,
+    pub v: f64,
     pub normal: Vector3,
 
     // True: ray is outside. False: ray is inside
@@ -28,6 +30,8 @@ impl HitResult {
     pub fn new(
         dist: f64,
         hit_point: Vector3,
+        u: f64,
+        v: f64,
         normal: Vector3,
         face: bool,
         mat: Arc<dyn Material>,
@@ -35,6 +39,8 @@ impl HitResult {
         HitResult {
             dist,
             hit_point,
+            u,
+            v,
             normal,
             face,
             mat,
