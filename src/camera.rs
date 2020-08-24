@@ -3,6 +3,7 @@ use crate::vec3::Vector3;
 
 use rand::Rng;
 
+#[allow(dead_code)]
 pub struct Camera {
     pub origin: Vector3,
     pub horiz: Vector3,
@@ -44,7 +45,9 @@ impl Camera {
             horiz,
             vert,
             ll_corner,
-            u, v, w,
+            u,
+            v,
+            w,
             lens_radius: aperture / 2.0,
         }
     }
@@ -63,11 +66,7 @@ impl Camera {
 pub fn random_in_unit_disc() -> Vector3 {
     let mut rng = rand::thread_rng();
     loop {
-        let p = Vector3::new(
-            rng.gen_range(-1.0, 1.0),
-            rng.gen_range(-1.0, 1.0),
-            0.0,
-        );
+        let p = Vector3::new(rng.gen_range(-1.0, 1.0), rng.gen_range(-1.0, 1.0), 0.0);
 
         if p.dot(&p) >= 1.0 {
             continue;

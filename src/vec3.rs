@@ -1,5 +1,5 @@
 use rand::Rng;
-use std::ops::{Add, Div, Mul, Neg, Sub, Index};
+use std::ops::{Add, Div, Index, Mul, Neg, Sub};
 
 #[derive(Copy, Clone, PartialEq, PartialOrd, Debug)]
 pub struct Vector3 {

@@ -10,6 +10,7 @@ pub struct Dielectric {
     ref_idx: f64,
 }
 
+#[allow(dead_code)]
 impl Dielectric {
     pub fn new(ref_idx: f64) -> Dielectric {
         Dielectric { ref_idx }

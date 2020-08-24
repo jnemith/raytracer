@@ -4,23 +4,21 @@ use crate::ray::Ray;
 use crate::textures::Texture;
 use crate::vec3::Vector3;
 
-use rgb::RGB;
-
 pub struct Lambertian {
-    color: Box<dyn Texture>,
+    texture: Box<dyn Texture>,
 }
 
 impl Lambertian {
-    pub fn new(color: impl Texture + 'static) -> Lambertian {
+    pub fn new(texture: impl Texture + 'static) -> Lambertian {
         Lambertian {
-            color: Box::new(color),
+            texture: Box::new(texture),
         }
     }
 }
 
 impl Material for Lambertian {
     fn scatter(&self, _ray_in: &Ray, hr: &HitResult) -> Option<MaterialResult> {
-        let attenuation = self.color.value(hr.u, hr.v, hr.hit_point);
+        let attenuation = self.texture.value(hr.u, hr.v, hr.hit_point);
         let target = hr.normal + Vector3::random_unit_vec();
         Some(MaterialResult::new(
             attenuation,

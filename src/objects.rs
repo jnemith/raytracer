@@ -61,10 +61,9 @@ impl HitList {
 
 impl Hittable for HitList {
     fn intersect(&self, ray: &Ray, min: f64) -> Option<HitResult> {
-        let min_dist = 0.001;
         self.objects
             .iter()
-            .filter_map(|obj| obj.intersect(ray, min_dist))
+            .filter_map(|obj| obj.intersect(ray, min))
             .min_by(|hr1, hr2| hr1.dist.partial_cmp(&hr2.dist).unwrap())
     }
 }

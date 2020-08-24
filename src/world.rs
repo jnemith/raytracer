@@ -1,5 +1,5 @@
 use crate::camera::Camera;
-use crate::objects::{HitList, HitResult, Hittable};
+use crate::objects::{HitList, Hittable};
 use crate::ray::Ray;
 use crate::vec3::Vector3;
 
@@ -20,13 +20,13 @@ pub struct World {
 
 impl World {
     pub fn new() -> World {
-        let spp = 15;
+        let spp = 25;
         let max_depth = 10;
 
         let aspect_ratio = 16. / 9.;
         let width = 426;
         let height = (width as f64 / aspect_ratio) as u32;
-        let from = Vector3::new(5.0, 4.0, 3.0);
+        let from = Vector3::new(5.0, 1.0, 3.0);
         let to = Vector3::new(0.0, 2.0, 0.0);
 
         let cam = Camera::new(

@@ -1,7 +1,7 @@
 use super::Texture;
 use crate::vec3::Vector3;
 
-use image::{DynamicImage, GenericImageView, ImageError, Pixel};
+use image::{DynamicImage, GenericImageView, ImageError};
 use rgb::RGB;
 
 pub struct ImageTexture {
